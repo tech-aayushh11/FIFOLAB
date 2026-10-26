@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIFO LAB — Interactive Page Replacement Simulator</title>
+  <meta name="description" content="Interactive FIFO Page Replacement Algorithm Simulator with female AI voice assistant AVA, live memory frame tables, Belady's anomaly lab, and real-time analytics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- CDN Dependencies -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <!-- App Container -->
+  <div class="app-layout" id="appLayout">
+
+    <!-- Mobile Navigation Drawer Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+    <!-- Persistent Sidebar -->
+    <aside class="app-sidebar" id="appSidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <div class="brand-logo" id="brandLogo">
+          <div class="logo-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="4" width="22" height="5" rx="2.5" class="logo-slot logo-slot-1"/>
+              <rect x="3" y="11.5" width="22" height="5" rx="2.5" class="logo-slot logo-slot-2"/>
+              <rect x="3" y="19" width="22" height="5" rx="2.5" class="logo-slot logo-slot-3"/>
+              <circle cx="21" cy="6.5" r="1.5" class="logo-dot logo-dot-1"/>
+              <circle cx="21" cy="14" r="1.5" class="logo-dot logo-dot-2"/>
+              <circle cx="7" cy="21.5" r="1.5" class="logo-dot logo-dot-3"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name">FIFO <span class="brand-accent">LAB</span></span>
+            <span class="brand-version">v2.4 Pro Studio</span>
+          </div>
+        </div>
+        <button class="mobile-close-btn" id="mobileCloseSidebarBtn" aria-label="Close navigation sidebar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Sidebar Sections">
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#overview-section" class="nav-link active" data-section="overview-section" id="navLinkOverview">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              </span>
+              <span class="nav-label">Overview</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#simulator-section" class="nav-link" data-section="simulator-section" id="navLinkSimulator">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              </span>
+              <span class="nav-label">Simulator</span>
+              <span class="nav-badge" id="navActiveProcessBadge">P1</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#processes-section" class="nav-link" data-section="processes-section" id="navLinkProcesses">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+              </span>
+              <span class="nav-label">Processes</span>
+              <span class="nav-counter" id="navProcessCount">3</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#analytics-section" class="nav-link" data-section="analytics-section" id="navLinkAnalytics">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              </span>
+              <span class="nav-label">Analytics</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#belady-section" class="nav-link" data-section="belady-section" id="navLinkBelady">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </span>
+              <span class="nav-label">Belady's Lab</span>
+              <span class="nav-pill-alert" title="Anomaly Demo">Anomaly</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#guide-section" class="nav-link" data-section="guide-section" id="navLinkGuide">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </span>
+              <span class="nav-label">Algorithm Guide</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#export-section" class="nav-link" data-section="export-section" id="navLinkExport">
+              <span class="nav-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              </span>
+              <span class="nav-label">Export Reports</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Sidebar Bottom Profile / OS Lab Badge -->
+      <div class="sidebar-footer">
+        <div class="lab-badge-card">
+          <div class="lab-badge-header">
+            <span class="lab-pulse-indicator" aria-hidden="true"></span>
+            <span class="lab-name">OS Laboratory</span>
+          </div>
+          <p class="lab-subtitle">Operating Systems Mini Project</p>
+          <div class="lab-meta-row">
+            <span class="lab-tag">FIFO Engine v1.0</span>
+            <button class="theme-toggle-compact" id="themeToggleSidebarBtn" aria-label="Toggle light or dark theme" title="Toggle light/dark theme">
+              <span class="theme-icon light-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              </span>
+              <span class="theme-icon dark-icon" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+
+      <!-- Persistent Top Header -->
+      <header class="app-header" id="appHeader">
+        <div class="header-left">
+          <button class="mobile-menu-toggle" id="mobileMenuBtn" aria-label="Open mobile navigation menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="header-titles">
+            <div class="breadcrumb" aria-label="Breadcrumb navigation">
+              <span class="breadcrumb-item">OS Lab</span>
+              <span class="breadcrumb-separator" aria-hidden="true">/</span>
+              <span class="breadcrumb-item breadcrumb-active">FIFO Simulator</span>
+            </div>
+            <h1 class="header-title">Page Replacement Studio</h1>
+            <p class="header-subtitle">Explore FIFO memory management step by step.</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Active Process Badge -->
+          <div class="header-process-pill" id="headerProcessPill" title="Currently selected process">
+            <span class="pill-dot"></span>
+            <span class="pill-text" id="headerProcessName">Process P1</span>
+            <span class="pill-frames" id="headerProcessFrames">3 Frames</span>
+          </div>
+
+          <!-- Simulation Status Badge -->
+          <div class="status-badge status-ready" id="simulationStatusBadge" role="status" aria-live="polite">
+            <span class="status-dot"></span>
+            <span class="status-text" id="statusBadgeText">Ready</span>
+          </div>
+
+          <!-- Reset Icon Button -->
+          <button class="icon-button" id="headerResetBtn" title="Reset simulation to Step 0" aria-label="Reset simulation">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+          </button>
+
+          <!-- Theme Toggle Button -->
+          <button class="icon-button" id="headerThemeBtn" title="Toggle theme (Light/Dark)" aria-label="Toggle theme">
+            <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+
+          <!-- Voice Assistant Button -->
+          <button class="voice-header-btn" id="headerVoiceBtn" aria-label="Open AVA Voice Assistant" title="Open AVA AI Voice Assistant">
+            <span class="mic-icon-wrapper" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </span>
+            <span class="voice-btn-label">AVA</span>
+            <span class="voice-mic-status-dot" id="headerMicStatusDot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Workspace Container -->
+      <main class="main-content" id="mainContent">
+
+        <!-- 4. DASHBOARD OVERVIEW: LIVE KPI CARDS -->
+        <section class="overview-section" id="overview-section" aria-labelledby="kpiHeading">
+          <div class="section-header-compact">
+            <h2 class="sr-only" id="kpiHeading">Live Metrics Overview</h2>
+            <div class="metrics-context-toggle">
+              <span class="metrics-context-label">Showing Metrics for:</span>
+              <div class="segmented-control" role="tablist">
+                <button class="segment-btn active" id="statsScopeCurrentBtn" role="tab" aria-selected="true">Selected Process (<span id="statsScopeProcessName">P1</span>)</button>
+                <button class="segment-btn" id="statsScopeAllBtn" role="tab" aria-selected="false">All Processes Combined</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="kpi-grid">
+            <!-- KPI 1: Total References -->
+            <div class="kpi-card kpi-neutral" id="kpiTotalRefs">
+              <div class="kpi-top">
+                <span class="kpi-label">Total References</span>
+                <div class="kpi-icon-pill" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+              </div>
+              <div class="kpi-main">
+                <span class="kpi-value" id="kpiValueRefs">20</span>
+                <span class="kpi-progress-text" id="kpiProcessedText">Step 0 / 20</span>
+              </div>
+              <p class="kpi-subtext" id="kpiSubtextRefs">Length of page reference sequence</p>
+            </div>
+
+            <!-- KPI 2: Page Hits -->
+            <div class="kpi-card kpi-success" id="kpiHits">
+              <div class="kpi-top">
+                <span class="kpi-label">Page Hits</span>
+                <div class="kpi-icon-pill kpi-icon-success" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+              </div>
+              <div class="kpi-main">
+                <span class="kpi-value value-hit" id="kpiValueHits">5</span>
+                <span class="kpi-badge badge-hit" id="kpiDeltaHits">Hit Rate: 25.0%</span>
+              </div>
+              <p class="kpi-subtext" id="kpiSubtextHits">Pages found directly in frame cache</p>
+            </div>
+
+            <!-- KPI 3: Page Faults -->
+            <div class="kpi-card kpi-danger" id="kpiFaults">
+              <div class="kpi-top">
+                <span class="kpi-label">Page Faults</span>
+                <div class="kpi-icon-pill kpi-icon-danger" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </div>
+              </div>
+              <div class="kpi-main">
+                <span class="kpi-value value-fault" id="kpiValueFaults">15</span>
+                <span class="kpi-badge badge-fault" id="kpiDeltaFaults">Fault Rate: 75.0%</span>
+              </div>
+              <p class="kpi-subtext" id="kpiSubtextFaults">Misses requiring disk/memory load</p>
+            </div>
+
+            <!-- KPI 4: Hit Ratio -->
+            <div class="kpi-card kpi-accent" id="kpiHitRatio">
+              <div class="kpi-top">
+                <span class="kpi-label">Hit Ratio</span>
+                <div class="kpi-icon-pill kpi-icon-accent" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                </div>
+              </div>
+              <div class="kpi-main">
+                <span class="kpi-value value-ratio" id="kpiValueRatio">25.0%</span>
+                <div class="kpi-progress-bar" aria-hidden="true">
+                  <div class="progress-fill" id="kpiProgressFill" style="width: 25.0%"></div>
+                </div>
+              </div>
+              <p class="kpi-subtext" id="kpiSubtextRatio">Hits / Processed references</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5 & 6. PROCESS MANAGEMENT & FRAME ALLOCATION STRIP -->
+        <section class="section-card process-manager-card" id="processes-section">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Process Management & Frame Allocation</h2>
+              <p class="card-subtitle">Manage concurrent processes and configure global or independent physical memory allocation.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary btn-sm" id="manageAllocationBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Frame Allocator
+              </button>
+              <button class="btn btn-primary btn-sm" id="addNewProcessBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Process
+              </button>
+            </div>
+          </div>
+
+          <!-- Process Tabs and Summary List -->
+          <div class="process-tabs-wrapper">
+            <div class="process-tabs-list" id="processTabsContainer" role="tablist" aria-label="Process Selection Tabs">
+              <!-- Dynamically populated process tab pills -->
+            </div>
+          </div>
+
+          <!-- Active Process Quick Config Bar -->
+          <div class="active-process-config-bar" id="activeProcessConfigBar">
+            <div class="config-col">
+              <label for="activeProcessNameInput" class="config-label">Process Name / ID</label>
+              <input type="text" id="activeProcessNameInput" class="form-input form-input-sm" maxlength="15" value="P1">
+            </div>
+            <div class="config-col">
+              <label for="activeProcessFrameInput" class="config-label">
+                Frames Allocated
+                <span class="info-tip" title="Number of physical memory frame slots assigned to this process (1-10)">ℹ</span>
+              </label>
+              <div class="stepper-input">
+                <button class="stepper-btn" id="frameDecBtn" aria-label="Decrease frames">−</button>
+                <input type="number" id="activeProcessFrameInput" class="form-input form-input-sm stepper-val" min="1" max="10" value="3">
+                <button class="stepper-btn" id="frameIncBtn" aria-label="Increase frames">+</button>
+              </div>
+            </div>
+            <div class="config-col process-actions-col">
+              <span class="config-label">Actions</span>
+              <div class="btn-group">
+                <button class="btn btn-outline btn-sm" id="duplicateProcessBtn" title="Duplicate this process">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Duplicate
+                </button>
+                <button class="btn btn-outline-danger btn-sm" id="deleteProcessBtn" title="Delete this process">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. REFERENCE STRING EDITOR -->
+        <section class="section-card reference-editor-card" id="reference-editor-section">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Page Reference String</h2>
+              <p class="card-subtitle">Enter comma or space-separated page numbers, or select a classic textbook preset.</p>
+            </div>
+            <div class="preset-selector-group">
+              <label for="presetSelect" class="sr-only">Load Algorithm Preset</label>
+              <select id="presetSelect" class="form-select form-select-sm">
+                <option value="" disabled selected>Load Preset Scenario...</option>
+                <option value="classic">Classic Textbook (7,0,1,2,0,3,0,4...)</option>
+                <option value="belady">Belady's Anomaly (1,2,3,4,1,2,5,1,2,3,4,5)</option>
+                <option value="locality">Locality of Reference (1,2,3,2,1,2,3,4...)</option>
+                <option value="sequential">Pure Sequential (0,1,2,3,4,5,6,7,8,9)</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" id="openRandomModalBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                Randomize
+              </button>
+            </div>
+          </div>
+
+          <div class="editor-input-row">
+            <div class="input-wrapper-flex">
+              <input type="text" id="referenceStringInput" class="form-input form-input-mono" placeholder="e.g. 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1" value="7,0,1,2,0,3,0,4,2,3,0,3,2,1,2,0,1,7,0,1">
+              <button class="btn btn-primary" id="applyReferenceBtn">Apply Changes</button>
+              <button class="btn btn-outline" id="clearReferenceBtn">Clear</button>
+            </div>
+            <div class="inline-validation-msg" id="refValidationMsg" role="alert" aria-live="assertive"></div>
+          </div>
+
+          <!-- Live Preview Chips -->
+          <div class="reference-chips-preview-container">
+            <div class="preview-label-row">
+              <span class="preview-title">Parsed Sequence Preview:</span>
+              <span class="preview-count" id="previewChipCount">20 references</span>
+            </div>
+            <div class="chips-scroll-strip" id="referenceChipsPreview">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 9, 10, 11, 12. SIMULATION WORKSPACE (THE DOMINANT CORE SECTION) -->
+        <section class="section-card simulation-workspace-card" id="simulator-section">
+          <!-- Workspace Card Header -->
+          <div class="workspace-header">
+            <div class="workspace-title-block">
+              <div class="badge-row">
+                <span class="pill-process-current" id="simProcessBadge">Process P1</span>
+                <span class="pill-frames-current" id="simFramesBadge">3 Frames</span>
+                <span class="pill-step-counter" id="simStepCounterBadge">Step 0 / 20</span>
+              </div>
+              <h2 class="workspace-title">Memory Simulation</h2>
+              <p class="workspace-subtitle">Follow every page reference as FIFO processes it.</p>
+            </div>
+
+            <!-- Current Active Reference Spotlight -->
+            <div class="current-reference-spotlight" id="currentRefSpotlight">
+              <span class="spotlight-label">Current Page</span>
+              <div class="spotlight-chip" id="spotlightPageChip">—</div>
+              <span class="spotlight-status" id="spotlightStatusBadge">Ready</span>
+            </div>
+          </div>
+
+          <!-- Reference Timeline with Scrubber & Chips -->
+          <div class="timeline-container">
+            <div class="timeline-header-bar">
+              <span class="timeline-heading">Reference Timeline</span>
+              <span class="timeline-hint">Click any chip or drag scrubber to jump directly to that step</span>
+            </div>
+            <div class="timeline-chips-wrapper" id="timelineChipsWrapper">
+              <!-- Reference Chips with hit/fault and current indicators -->
+            </div>
+            
+            <div class="timeline-scrubber-bar">
+              <label for="timelineScrubber" class="sr-only">Simulation Timeline Scrubber</label>
+              <input type="range" id="timelineScrubber" class="timeline-slider" min="0" max="20" value="0" step="1">
+              <div class="scrubber-labels">
+                <span>Start (Step 0)</span>
+                <span id="scrubberCurrentStepLabel">Step 0 / 20</span>
+                <span>Final (Step 20)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulation Controls Toolbar -->
+          <div class="sim-controls-toolbar">
+            <div class="playback-btn-group">
+              <button class="btn btn-control" id="simStartBtn" title="Jump to Step 0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+                Start
+              </button>
+              <button class="btn btn-control" id="simPrevBtn" title="Step Backward (ArrowLeft)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="19 20 9 12 19 4 19 20"></polygon></svg>
+                Step Back
+              </button>
+              <button class="btn btn-primary btn-play" id="simPlayBtn" title="Auto-Play / Pause (Spacebar)">
+                <svg class="play-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <svg class="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <span id="simPlayBtnText">Auto-Play</span>
+              </button>
+              <button class="btn btn-control" id="simNextBtn" title="Step Forward (ArrowRight)">
+                Step Forward
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"></polygon></svg>
+              </button>
+              <button class="btn btn-control btn-reset" id="simResetBtn" title="Reset Simulation">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                Reset
+              </button>
+            </div>
+
+            <!-- Playback Speed Control -->
+            <div class="speed-control-wrapper">
+              <label for="speedSlider" class="speed-label">Speed: <span id="speedValueText" class="speed-val">1.0x</span></label>
+              <input type="range" id="speedSlider" min="0.25" max="3.0" step="0.25" value="1.0" class="speed-range">
+            </div>
+          </div>
+
+          <!-- 10. TEXTBOOK MEMORY FRAME TABLE -->
+          <div class="memory-table-wrapper">
+            <div class="table-legend-strip">
+              <span class="legend-item"><span class="legend-swatch hit-swatch"></span> Hit</span>
+              <span class="legend-item"><span class="legend-swatch fault-swatch"></span> Fault</span>
+              <span class="legend-item"><span class="legend-swatch replace-swatch"></span> Replaced (Oldest)</span>
+              <span class="legend-item"><span class="legend-swatch loaded-swatch"></span> Incoming Loaded</span>
+            </div>
+
+            <div class="frame-table-scroll-container" id="frameTableScrollContainer">
+              <table class="frame-matrix-table" id="memoryFrameTable" aria-label="FIFO Memory Frame Historical Table">
+                <!-- Dynamically generated rows & columns -->
+              </table>
+            </div>
+          </div>
+
+          <!-- 11 & 12. FIFO QUEUE VISUALIZER & DYNAMIC EXPLANATION CARD -->
+          <div class="simulation-aux-grid">
+            <!-- 11. FIFO Queue Visualizer -->
+            <div class="aux-card fifo-queue-card" id="fifoQueueSection">
+              <div class="aux-card-header">
+                <div class="card-icon-pill" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                </div>
+                <div>
+                  <h3 class="aux-title">FIFO Queue Order</h3>
+                  <p class="aux-subtitle">Oldest page at front is evicted first on page fault.</p>
+                </div>
+              </div>
+
+              <div class="queue-visual-container">
+                <div class="queue-pointers-row">
+                  <span class="pointer-badge pointer-front">Front (Oldest / Next Eviction)</span>
+                  <span class="pointer-badge pointer-rear">Rear (Newest)</span>
+                </div>
+                <div class="queue-track" id="queueTrack">
+                  <!-- Populated by JS -->
+                  <div class="queue-empty-state">Queue is empty (no pages loaded)</div>
+                </div>
+                <p class="queue-principle-quote">
+                  "FIFO removes the page that entered memory earliest."
+                </p>
+              </div>
+            </div>
+
+            <!-- 12. Step-by-Step Explanation: What Just Happened? -->
+            <div class="aux-card explanation-card" id="explanationSection">
+              <div class="aux-card-header">
+                <div class="card-icon-pill info-icon-pill" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <div>
+                  <h3 class="aux-title">What Just Happened?</h3>
+                  <p class="aux-subtitle">Step-by-step plain English algorithm breakdown.</p>
+                </div>
+              </div>
+
+              <div class="explanation-content-body">
+                <div class="explanation-pill-row">
+                  <div class="step-badge" id="expStepBadge">Step 0</div>
+                  <div class="status-badge" id="expStatusBadge">Ready</div>
+                  <div class="replaced-badge" id="expReplacedBadge" style="display:none">Replaced: <strong id="expReplacedVal">0</strong></div>
+                </div>
+                <p class="explanation-text" id="explanationText">
+                  Ready to begin. All memory frames are empty. Click <strong>Step Forward</strong> or <strong>Auto-Play</strong> to start observing FIFO page replacement.
+                </p>
+                <div class="explanation-footer-metrics">
+                  <span>Cumulative Hits: <strong id="expHitsCount">0</strong></span>
+                  <span>Cumulative Faults: <strong id="expFaultsCount">0</strong></span>
+                  <span>Current Ratio: <strong id="expRatioVal">0.0%</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 15. LIVE STATISTICS & ANALYTICS SECTION -->
+        <section class="section-card analytics-section" id="analytics-section">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Live Statistics & Performance Analytics</h2>
+              <p class="card-subtitle">Comprehensive memory access performance evaluation, hit/fault distributions, and frame scaling curve.</p>
+            </div>
+            <div class="chart-process-indicator">
+              Analyzing: <strong id="analyticsCurrentProcessText">Process P1</strong>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <!-- Chart 1: Donut Hit vs Fault -->
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <h3 class="chart-title">Access Distribution (Hits vs Faults)</h3>
+                <span class="chart-tag">Cumulative</span>
+              </div>
+              <div class="donut-chart-container">
+                <canvas id="hitFaultDonutChart" aria-label="Hits vs Faults donut chart" role="img"></canvas>
+                <div class="donut-center-label">
+                  <span class="donut-center-val" id="donutHitPercent">25%</span>
+                  <span class="donut-center-sub">Hit Ratio</span>
+                </div>
+              </div>
+              <div class="donut-custom-legend">
+                <div class="legend-entry">
+                  <span class="legend-color-dot dot-hit"></span>
+                  <span class="legend-name">Hits:</span>
+                  <strong id="legendHitsVal">5</strong>
+                </div>
+                <div class="legend-entry">
+                  <span class="legend-color-dot dot-fault"></span>
+                  <span class="legend-name">Faults:</span>
+                  <strong id="legendFaultsVal">15</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart 2: Page Faults vs Frame Count (1 to 10) with Belady's Anomaly Detection -->
+            <div class="chart-card chart-card-wide">
+              <div class="chart-card-header">
+                <div>
+                  <h3 class="chart-title">Page Faults vs. Number of Frames (1–10)</h3>
+                  <p class="chart-subtitle">Observes whether increasing frame capacity always decreases page faults in FIFO.</p>
+                </div>
+                <div class="belady-badge-wrapper" id="chartBeladyAlert" style="display:none">
+                  <span class="anomaly-warning-badge">⚠️ Belady's Anomaly Detected</span>
+                </div>
+              </div>
+              <div class="line-chart-container">
+                <canvas id="faultsVsFramesChart" aria-label="Page Faults vs Number of Frames chart" role="img"></canvas>
+              </div>
+              <div class="chart-insight-box" id="chartInsightBox">
+                <strong>Algorithm Insight:</strong> Under FIFO, increasing physical frames usually lowers faults, but because FIFO does not maintain the stack inclusion property, Belady's Anomaly can occur for certain reference strings.
+              </div>
+            </div>
+          </div>
+
+          <!-- 14. ALL-PROCESSES COMPARISON TABLE & SUMMARY -->
+          <div class="all-process-comparison-panel" id="allProcessComparisonPanel">
+            <div class="card-header-flex">
+              <div>
+                <h3 class="chart-title">Multi-Process Comparison Matrix</h3>
+                <p class="chart-subtitle">Independent per-process simulation metrics across all active workloads.</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="styled-comparison-table" id="allProcessesTable">
+                <thead>
+                  <tr>
+                    <th>Process</th>
+                    <th>References</th>
+                    <th>Frames</th>
+                    <th>Page Hits</th>
+                    <th>Page Faults</th>
+                    <th>Hit Ratio</th>
+                    <th>Fault Ratio</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="allProcessesTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+            <p class="multi-process-note">
+              <strong>OS Lab Viva Note:</strong> In this simulator, each process runs an independent FIFO paging simulation with its own allocated frames. Separate process fault counts are evaluated independently to demonstrate distinct process behaviors.
+            </p>
+          </div>
+        </section>
+
+        <!-- 16. BELADY'S ANOMALY DEMONSTRATION LAB -->
+        <section class="section-card belady-lab-card" id="belady-section">
+          <div class="card-header-flex">
+            <div>
+              <div class="card-badge-row">
+                <span class="badge-special">OS Anomaly Lab</span>
+                <span class="badge-anomaly" id="beladyResultTag">Anomaly Active (+1 Fault)</span>
+              </div>
+              <h2 class="card-title">Belady's Anomaly Demonstration</h2>
+              <p class="card-subtitle">
+                Demonstrates the counter-intuitive phenomenon where allocating <em>more</em> page frames results in <em>more</em> page faults under FIFO.
+              </p>
+            </div>
+            <div class="belady-actions">
+              <button class="btn btn-secondary btn-sm" id="loadBeladyToSimulatorBtn">
+                Load into Main Simulator
+              </button>
+            </div>
+          </div>
+
+          <!-- Belady String Input -->
+          <div class="belady-input-row">
+            <label for="beladyStringInput" class="config-label">Anomaly Reference Sequence:</label>
+            <div class="input-wrapper-flex">
+              <input type="text" id="beladyStringInput" class="form-input form-input-mono form-input-sm" value="1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5">
+              <button class="btn btn-outline btn-sm" id="testBeladyBtn">Re-evaluate Anomaly</button>
+              <button class="btn btn-outline btn-sm" id="resetBeladyDefaultBtn">Reset Default</button>
+            </div>
+          </div>
+
+          <!-- Side-by-side 3 Frames vs 4 Frames Comparison Cards -->
+          <div class="belady-comparison-grid">
+            <!-- 3 Frames Box -->
+            <div class="belady-card" id="beladyCard3Frames">
+              <div class="belady-card-top">
+                <span class="belady-frame-tag">Allocation A</span>
+                <h3 class="belady-frame-title">3 Physical Frames</h3>
+              </div>
+              <div class="belady-stat-main">
+                <span class="belady-fault-number" id="beladyFaults3">9</span>
+                <span class="belady-fault-unit">Page Faults</span>
+              </div>
+              <div class="belady-mini-metrics">
+                <span>Page Hits: <strong id="beladyHits3">3</strong></span>
+                <span>Hit Ratio: <strong id="beladyRatio3">25.0%</strong></span>
+              </div>
+              <!-- Compact mini memory trace -->
+              <div class="belady-mini-trace" id="beladyTrace3"></div>
+            </div>
+
+            <!-- VS Divider -->
+            <div class="belady-vs-divider">
+              <div class="vs-circle">VS</div>
+              <div class="anomaly-diff-pill" id="beladyDiffPill">+1 Fault</div>
+            </div>
+
+            <!-- 4 Frames Box -->
+            <div class="belady-card anomaly-highlight" id="beladyCard4Frames">
+              <div class="belady-card-top">
+                <span class="belady-frame-tag">Allocation B</span>
+                <h3 class="belady-frame-title">4 Physical Frames</h3>
+              </div>
+              <div class="belady-stat-main">
+                <span class="belady-fault-number text-danger" id="beladyFaults4">10</span>
+                <span class="belady-fault-unit text-danger">Page Faults (Worse!)</span>
+              </div>
+              <div class="belady-mini-metrics">
+                <span>Page Hits: <strong id="beladyHits4">2</strong></span>
+                <span>Hit Ratio: <strong id="beladyRatio4">16.7%</strong></span>
+              </div>
+              <!-- Compact mini memory trace -->
+              <div class="belady-mini-trace" id="beladyTrace4"></div>
+            </div>
+          </div>
+
+          <!-- Plain English Explanation of Belady's Anomaly -->
+          <div class="belady-explanation-box">
+            <h4 class="box-heading">Why does Belady's Anomaly happen in FIFO?</h4>
+            <p>
+              In stack-based page replacement algorithms (such as LRU or Optimal), the set of pages in memory for <em>k</em> frames is always a strict subset of the set of pages for <em>k+1</em> frames (known as the <strong>Stack Inclusion Property</strong>). FIFO does <strong>not</strong> possess this stack property.
+            </p>
+            <p>
+              In this example, at reference <strong>5</strong>, having 4 frames displaced page 1 earlier than the 3-frame allocation did. Consequently, subsequent references to 1, 2, 3, and 4 generate unexpected cascading faults, leading to <strong>10 faults with 4 frames</strong> compared to only <strong>9 faults with 3 frames</strong>!
+            </p>
+          </div>
+        </section>
+
+        <!-- 17. ALGORITHM GUIDE & VIVA CHEAT SHEET -->
+        <section class="section-card algorithm-guide-card" id="guide-section">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">How FIFO Works — Engineering Guide</h2>
+              <p class="card-subtitle">Fundamental concepts, replacement mechanics, complexity analysis, and college viva questions.</p>
+            </div>
+            <button class="btn btn-outline btn-sm" id="toggleGuideAccordionBtn">Collapse Guide</button>
+          </div>
+
+          <div class="guide-content-body" id="guideContentBody">
+            <div class="guide-grid">
+              <!-- Principle 1 -->
+              <div class="guide-box">
+                <div class="guide-box-header">
+                  <span class="guide-num">01</span>
+                  <h3 class="guide-box-title">Page Replacement Concept</h3>
+                </div>
+                <p>
+                  When a process requests a virtual memory page not currently resident in physical RAM, the CPU generates a <strong>Page Fault</strong> interrupt. If all allocated frame slots are full, an existing resident page must be chosen for eviction (replacement) to make room for the incoming page.
+                </p>
+              </div>
+
+              <!-- Principle 2 -->
+              <div class="guide-box">
+                <div class="guide-box-header">
+                  <span class="guide-num">02</span>
+                  <h3 class="guide-box-title">FIFO Selection Rule</h3>
+                </div>
+                <p>
+                  First-In, First-Out associates each resident page with the timestamp or sequence number when it entered memory. When eviction is required, the <strong>oldest loaded page</strong> (the one at the front of the FIFO queue) is selected. Crucially, hits do <em>not</em> refresh a page's FIFO age!
+                </p>
+              </div>
+
+              <!-- Principle 3 -->
+              <div class="guide-box">
+                <div class="guide-box-header">
+                  <span class="guide-num">03</span>
+                  <h3 class="guide-box-title">Algorithm Pseudocode</h3>
+                </div>
+                <pre class="code-snippet"><code>1. Initialize empty frame slots [null ... null]
+2. Initialize empty FIFO queue Q = []
+3. For each referenced page P:
+     If P is in frames:
+       Record HIT; (Q remains unchanged)
+     Else:
+       Record PAGE FAULT;
+       If free slot exists:
+         Load P into free slot; Enqueue(Q, P);
+       Else:
+         Evicted = Dequeue(Q);
+         Replace Evicted with P in slot;
+         Enqueue(Q, P);</code></pre>
+              </div>
+
+              <!-- Principle 4 -->
+              <div class="guide-box">
+                <div class="guide-box-header">
+                  <span class="guide-num">04</span>
+                  <h3 class="guide-box-title">Complexity Analysis</h3>
+                </div>
+                <ul class="guide-list">
+                  <li><strong>Straightforward Scan:</strong> Scanning <code>f</code> frames per reference takes <span class="mono-badge">O(n × f)</span> time, where <code>n</code> is reference count and <code>f</code> is frame count.</li>
+                  <li><strong>Optimized Structure:</strong> Using a Hash Set + Doubly-Linked Queue achieves <span class="mono-badge">O(1)</span> amortized check and eviction per step (<span class="mono-badge">O(n)</span> total).</li>
+                  <li><strong>Space Complexity:</strong> Requires <span class="mono-badge">O(f)</span> auxiliary memory for resident frame storage.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- College Viva Q&A Accordion -->
+            <div class="viva-qa-section">
+              <h3 class="viva-heading">Common Engineering Viva Questions & Model Answers</h3>
+              <div class="faq-accordion">
+                <details class="faq-item">
+                  <summary class="faq-question">Why does a hit not change the queue order in FIFO?</summary>
+                  <div class="faq-answer">
+                    In FIFO, eviction priority depends strictly on <em>arrival time</em>, not access recency. If you were to move a hit page to the rear of the queue, the algorithm would become <strong>LRU (Least Recently Used)</strong> instead of FIFO.
+                  </div>
+                </details>
+                <details class="faq-item">
+                  <summary class="faq-question">What is Belady's Anomaly and which algorithms suffer from it?</summary>
+                  <div class="faq-answer">
+                    Belady's Anomaly is when increasing the number of physical memory frames leads to an increase in the number of page faults. Algorithms that do <strong>not</strong> obey the stack inclusion property (like FIFO and Second Chance) can exhibit Belady's anomaly. Stack algorithms (like LRU and Optimal) never suffer from it.
+                  </div>
+                </details>
+                <details class="faq-item">
+                  <summary class="faq-question">What are the trade-offs of FIFO compared to LRU and Optimal?</summary>
+                  <div class="faq-answer">
+                    <strong>Advantages:</strong> Low computational overhead, extremely simple to implement with a circular buffer or queue, no complex hardware access-bit tracking required.<br>
+                    <strong>Disadvantages:</strong> Poor hit ratio for programs with frequently accessed legacy pages (e.g. initialization loops), susceptible to Belady's anomaly, and significantly outperformed by LRU and Clock replacement.
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 18. EXPORT REPORTS SECTION -->
+        <section class="section-card export-card" id="export-section">
+          <div class="card-header-flex">
+            <div>
+              <h2 class="card-title">Export Lab Reports & Data</h2>
+              <p class="card-subtitle">Generate downloadable CSV traces, PDF lab reports, and high-resolution PNG snapshots for lab submissions.</p>
+            </div>
+          </div>
+
+          <div class="export-options-grid">
+            <!-- Option 1: CSV Trace -->
+            <div class="export-box">
+              <div class="export-box-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              </div>
+              <h3 class="export-box-title">Simulation Trace CSV</h3>
+              <p class="export-box-desc">Step-by-step frame matrix, hit/fault indicators, replaced pages, and cumulative metrics in standard CSV format.</p>
+              <div class="export-btn-group">
+                <button class="btn btn-outline btn-sm" id="exportCurrentCsvBtn">Export Current Process CSV</button>
+                <button class="btn btn-outline btn-sm" id="exportAllCsvBtn">Export All Processes CSV</button>
+              </div>
+            </div>
+
+            <!-- Option 2: PDF Lab Report -->
+            <div class="export-box highlight-export">
+              <div class="export-box-icon text-accent">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><circle cx="12" cy="14" r="3"></circle></svg>
+              </div>
+              <h3 class="export-box-title">Complete Lab Report (PDF)</h3>
+              <p class="export-box-desc">Comprehensive lab record with academic header, memory matrix, performance metrics, and Belady's analysis.</p>
+              <div class="export-btn-group">
+                <button class="btn btn-primary btn-sm" id="exportPdfBtn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Generate PDF Report
+                </button>
+                <button class="btn btn-outline btn-sm" id="browserPrintBtn" title="Direct browser print">
+                  Browser Print
+                </button>
+              </div>
+            </div>
+
+            <!-- Option 3: PNG Table Snapshot -->
+            <div class="export-box">
+              <div class="export-box-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+              </div>
+              <h3 class="export-box-title">Memory Table Snapshot (PNG)</h3>
+              <p class="export-box-desc">Crisp high-resolution image of the textbook memory frame table, perfect for presentation slides.</p>
+              <button class="btn btn-outline btn-sm" id="exportPngBtn">
+                Download Table PNG
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Persistent App Footer -->
+      <footer class="app-footer">
+        <div class="footer-inner">
+          <p class="footer-left">
+            <strong>FIFO LAB</strong> — Interactive Page Replacement Simulator • Designed for OS Laboratory Viva & Research
+          </p>
+          <p class="footer-right">
+            Voice Assistant Powered by Web Speech API • Accessible & Responsive
+          </p>
+        </div>
+      </footer>
+    </div>
+
+    <!-- 13. FEMALE AI VOICE ASSISTANT (AVA) FLOATING PANEL -->
+    <div class="ava-floating-container" id="avaContainer">
+      <!-- Minimized Floating Bubble Trigger -->
+      <button class="ava-trigger-bubble" id="avaTriggerBubble" aria-label="Toggle AVA Voice Assistant" title="Click to chat with AVA AI Voice Assistant">
+        <div class="ava-avatar-ring">
+          <div class="ava-avatar-inner">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+          </div>
+        </div>
+        <span class="ava-bubble-badge" id="avaBubbleStatusDot"></span>
+      </button>
+
+      <!-- Expandable Assistant Modal Card -->
+      <div class="ava-assistant-card" id="avaCard" role="region" aria-label="AVA AI Voice Assistant Interface">
+        <!-- Assistant Card Header -->
+        <div class="ava-card-header">
+          <div class="ava-identity">
+            <div class="ava-avatar-sm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </div>
+            <div>
+              <div class="ava-title-row">
+                <span class="ava-name">AVA</span>
+                <span class="ava-voice-badge">Female AI Voice</span>
+              </div>
+              <p class="ava-tagline">Your voice-powered OS lab companion.</p>
+            </div>
+          </div>
+          <div class="ava-header-btns">
+            <button class="ava-icon-btn" id="avaMinimizeBtn" title="Minimize Assistant" aria-label="Minimize AVA Voice Assistant">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Assistant Status & Waveform Visualizer -->
+        <div class="ava-visualizer-strip">
+          <div class="ava-status-indicator">
+            <span class="ava-state-dot" id="avaStateDot"></span>
+            <span class="ava-state-text" id="avaStateText">Idle</span>
+          </div>
+
+          <!-- Dynamic Audio Waveform -->
+          <div class="audio-waveform-bars" id="audioWaveform" aria-hidden="true">
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+            <span class="wave-bar"></span>
+          </div>
+        </div>
+
+        <!-- Conversation Scroll Area -->
+        <div class="ava-chat-scroll" id="avaChatScroll">
+          <div class="ava-bubble ava-bot-bubble">
+            <p>
+              Hi there! I'm <strong>AVA</strong>, your voice-powered OS lab assistant. You can speak commands like <em>"Start simulation"</em>, <em>"Next step"</em>, <em>"Set frames to 4"</em>, or ask me <em>"Tell me the page faults"</em>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Live Voice Input & Mic Toggle Row -->
+        <div class="ava-mic-control-row">
+          <button class="ava-mic-main-btn" id="avaMicBtn" aria-label="Toggle voice listening">
+            <span class="mic-inner-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+            </span>
+            <span class="mic-btn-label" id="avaMicBtnLabel">Tap to Speak</span>
+          </button>
+          <button class="btn btn-outline btn-xs" id="avaDemoSpeechBtn" title="Test female speech synthesis without microphone permission">
+            Demo Voice
+          </button>
+        </div>
+
+        <!-- Quick Voice Command Chips -->
+        <div class="ava-quick-chips-wrapper">
+          <span class="chips-title">Suggested Voice Commands:</span>
+          <div class="ava-chips-flex" id="avaChipsFlex">
+            <button class="command-chip" data-cmd="Next step">"Next step"</button>
+            <button class="command-chip" data-cmd="Explain the current step">"Explain step"</button>
+            <button class="command-chip" data-cmd="Play simulation">"Play simulation"</button>
+            <button class="command-chip" data-cmd="Tell me the page faults">"Page faults?"</button>
+            <button class="command-chip" data-cmd="Set frames to 4">"Set frames to 4"</button>
+            <button class="command-chip" data-cmd="Explain FIFO">"Explain FIFO"</button>
+            <button class="command-chip" data-cmd="Load Belady anomaly example">"Load Belady"</button>
+          </div>
+        </div>
+
+        <!-- Voice Settings Drawer (Collapsible) -->
+        <details class="ava-settings-details">
+          <summary class="ava-settings-toggle">Assistant Settings & Voice Config</summary>
+          <div class="ava-settings-panel">
+            <div class="setting-row">
+              <label for="avaVoiceSelect" class="setting-label">Selected Voice:</label>
+              <select id="avaVoiceSelect" class="form-select form-select-xs"></select>
+            </div>
+            <div class="setting-row">
+              <label for="avaSpeedSlider" class="setting-label">Voice Pitch/Speed: <span id="avaSpeedVal">1.0x</span></label>
+              <input type="range" id="avaSpeedSlider" min="0.75" max="1.4" step="0.05" value="1.0" class="speed-range">
+            </div>
+            <div class="setting-row checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="avaAutoNarrateCheckbox" checked>
+                <span>Auto-narrate steps during simulation</span>
+              </label>
+            </div>
+            <div class="setting-row checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="avaMuteCheckbox">
+                <span>Mute speech output</span>
+              </label>
+            </div>
+            <div class="setting-action-row">
+              <button class="btn btn-outline btn-xs" id="avaStopSpeakingBtn">Stop Speaking</button>
+              <button class="btn btn-outline btn-xs" id="avaRepeatExplanationBtn">Repeat Explanation</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- GLOBAL ALLOCATION MODAL -->
+    <div class="modal-backdrop" id="allocationModalBackdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="allocModalTitle">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title" id="allocModalTitle">Global Frame Allocation Manager</h3>
+          <button class="modal-close-btn" id="closeAllocModalBtn" aria-label="Close allocation modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">
+            Configure how the total physical frame budget is divided among all active processes.
+          </p>
+
+          <div class="form-group">
+            <label for="globalTotalFramesInput" class="form-label">Total Physical Frame Budget:</label>
+            <div class="stepper-input">
+              <button class="stepper-btn" id="globalFrameDecBtn">−</button>
+              <input type="number" id="globalTotalFramesInput" class="form-input stepper-val" min="1" max="30" value="6">
+              <button class="stepper-btn" id="globalFrameIncBtn">+</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Allocation Strategy:</label>
+            <div class="strategy-options">
+              <label class="radio-pill">
+                <input type="radio" name="allocStrategy" value="equal" checked>
+                <span>Equal Allocation</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="allocStrategy" value="proportional">
+                <span>Proportional to Length</span>
+              </label>
+              <label class="radio-pill">
+                <input type="radio" name="allocStrategy" value="custom">
+                <span>Custom Allocation</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Allocation table preview -->
+          <div class="allocation-preview-table-wrapper">
+            <table class="styled-comparison-table" id="allocationPreviewTable">
+              <thead>
+                <tr>
+                  <th>Process</th>
+                  <th>References</th>
+                  <th>Assigned Frames</th>
+                </tr>
+              </thead>
+              <tbody id="allocationPreviewBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="inline-validation-msg" id="allocValidationMsg" role="alert"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" id="cancelAllocModalBtn">Cancel</button>
+          <button class="btn btn-primary" id="saveAllocModalBtn">Apply Allocation</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANDOM REFERENCE STRING GENERATOR MODAL -->
+    <div class="modal-backdrop" id="randomModalBackdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="randomModalTitle">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title" id="randomModalTitle">Generate Random Page References</h3>
+          <button class="modal-close-btn" id="closeRandomModalBtn" aria-label="Close modal">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="randomCountInput" class="form-label">Number of Page References (3–50):</label>
+            <input type="number" id="randomCountInput" class="form-input" min="3" max="50" value="20">
+          </div>
+          <div class="form-group-row">
+            <div class="form-group">
+              <label for="randomMinInput" class="form-label">Min Page Value:</label>
+              <input type="number" id="randomMinInput" class="form-input" min="0" max="99" value="0">
+            </div>
+            <div class="form-group">
+              <label for="randomMaxInput" class="form-label">Max Page Value:</label>
+              <input type="number" id="randomMaxInput" class="form-input" min="0" max="99" value="7">
+            </div>
+          </div>
+          <div class="form-group checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="randomSeedCheckbox">
+              <span>Use deterministic seed (repeatable output)</span>
+            </label>
+          </div>
+          <div class="inline-validation-msg" id="randomValidationMsg" role="alert"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" id="cancelRandomModalBtn">Cancel</button>
+          <button class="btn btn-primary" id="generateRandomConfirmBtn">Generate & Load</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div class="modal-backdrop" id="confirmModalBackdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+      <div class="modal-card modal-card-sm">
+        <div class="modal-header">
+          <h3 class="modal-title" id="confirmModalTitle">Confirm Action</h3>
+          <button class="modal-close-btn" id="closeConfirmModalBtn" aria-label="Close confirmation">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc" id="confirmModalMessage">Are you sure you want to proceed?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" id="confirmCancelBtn">Cancel</button>
+          <button class="btn btn-danger" id="confirmAcceptBtn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  </div>
+
+  <!-- Main JavaScript File -->
+  <script src="script.js"></script>
+</body>
+</html>
